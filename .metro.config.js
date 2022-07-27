@@ -3,13 +3,15 @@ const ps = require('path');
 const crypto = require('crypto');
 const sep = ps.sep;
 const type = process.argv[4];
+const dev = process.argv[6];
 const assets = process.argv[12];
 const base = process.cwd();
 const map = base+sep+"node_modules"+sep+"react-native-applet"+sep+".map."+type+".json";
 try{fs.mkdirSync(base+sep+assets,{recursive:true})}catch(e){}
 const mapobj = require(map);
 const fileToIdMap = new Map();
-
+let timestamp = "";
+if(dev==="true")timestamp="_"+new Date().getTime();
 module.exports = {
   projectRoot:base,
   serializer: {
@@ -21,7 +23,7 @@ module.exports = {
         id = fileToIdMap.get(rpath);
         if(id)return id;
         const md5 = crypto.createHash('md5');
-        id = md5.update(rpath).digest('hex');
+        id = md5.update(rpath).digest('hex')+timestamp;
         fileToIdMap.set(rpath,id);
         return id;
       };
